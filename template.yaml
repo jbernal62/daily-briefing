@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Daily Briefing AI — personalized top-10 items via WhatsApp
+
+Globals:
+  Function:
+    Timeout: 120
+    Runtime: python3.12
+    MemorySize: 256
+
+Resources:
+  DailyBriefingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src.handler.lambda_handler
+      CodeUri: .
+      Environment:
+        Variables:
+          CONFIG_PATH: config.yaml
+          GNEWS_API_KEY: !Ref GNewsApiKey
+          ADZUNA_APP_ID: !Ref AdzunaAppId
+          ADZUNA_API_KEY: !Ref AdzunaApiKey
+          ANTHROPIC_API_KEY: !Ref AnthropicApiKey
+          WHATSAPP_PHONE_NUMBER_ID: !Ref WhatsAppPhoneNumberId
+          WHATSAPP_RECIPIENT_NUMBER: !Ref WhatsAppRecipientNumber
+          WHATSAPP_ACCESS_TOKEN: !Ref WhatsAppAccessToken
+      Events:
+        DailySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 12 * * ? *)
+            Description: "Run daily at 7 AM ET (12:00 UTC)"
+            Enabled: true
+
+Parameters:
+  GNewsApiKey:
+    Type: String
+    NoEcho: true
+  AdzunaAppId:
+    Type: String
+    NoEcho: true
+  AdzunaApiKey:
+    Type: String
+    NoEcho: true
+  AnthropicApiKey:
+    Type: String
+    NoEcho: true
+  WhatsAppPhoneNumberId:
+    Type: String
+    Default: ""
+  WhatsAppRecipientNumber:
+    Type: String
+    Default: ""
+  WhatsAppAccessToken:
+    Type: String
+    NoEcho: true
+    Default: ""
+
+Outputs:
+  DailyBriefingFunction:
+    Description: Lambda function ARN
+    Value: !GetAtt DailyBriefingFunction.Arn

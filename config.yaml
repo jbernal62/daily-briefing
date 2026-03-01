@@ -1,0 +1,20 @@
+profile:
+  name: Ezra
+  timezone: America/New_York
+  delivery_time: "07:00"
+
+interests:
+  news_topics: ["technology", "world", "business", "science"]
+  stocks: ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"]
+  job_keywords: ["DevOps", "Cloud Engineer", "Platform Engineer", "SRE"]
+  job_location: "us"
+  tech_tags: ["AI", "kubernetes", "cloud", "serverless"]
+
+limits:
+  max_items: 10
+  weights:
+    news: 3
+    stocks: 2
+    jobs: 2
+    tech: 2
+    knowledge: 1
