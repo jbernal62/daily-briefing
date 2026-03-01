@@ -12,7 +12,7 @@ from src.sources.devto import fetch_devto
 from src.sources.adzuna import fetch_jobs
 from src.sources.wikipedia import fetch_wikipedia
 from src.ranker import rank_and_summarize
-from src.whatsapp import format_briefing, send_whatsapp
+from src.telegram import format_briefing_telegram, send_telegram
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 
@@ -66,19 +66,18 @@ async def run_pipeline(config: dict) -> dict:
 
     # 3. Format the message
     name = config["profile"]["name"]
-    message = format_briefing(ranked, name)
+    message = format_briefing_telegram(ranked, name)
     print(f"Message formatted ({len(message)} chars)")
 
-    # 4. Send via WhatsApp
-    wa_phone_id = os.environ.get("WHATSAPP_PHONE_NUMBER_ID")
-    wa_recipient = os.environ.get("WHATSAPP_RECIPIENT_NUMBER")
-    wa_token = os.environ.get("WHATSAPP_ACCESS_TOKEN")
+    # 4. Send via Telegram
+    tg_token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    tg_chat_id = os.environ.get("TELEGRAM_CHAT_ID")
 
-    if wa_phone_id and wa_recipient and wa_token:
-        result = await send_whatsapp(message, wa_phone_id, wa_recipient, wa_token)
-        print(f"WhatsApp sent: {result}")
+    if tg_token and tg_chat_id:
+        result = await send_telegram(message, tg_token, tg_chat_id)
+        print(f"Telegram sent: {result.get('ok')}")
     else:
-        print("WhatsApp not configured - message returned in response body")
+        print("Telegram not configured - message returned in response body")
 
     return {"items_fetched": len(all_items), "items_selected": len(ranked), "message_length": len(message), "message": message}
 
