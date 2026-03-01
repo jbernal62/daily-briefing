@@ -1,20 +1,39 @@
 profile:
   name: Ezra
-  timezone: America/New_York
+  timezone: Europe/Amsterdam
   delivery_time: "07:00"
 
 interests:
-  news_topics: ["technology", "world", "business", "science"]
-  stocks: ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"]
-  job_keywords: ["DevOps", "Cloud Engineer", "Platform Engineer", "SRE"]
-  job_location: "us"
-  tech_tags: ["AI", "kubernetes", "cloud", "serverless"]
+  # 1. Remote jobs in NL/Europe — 5 slots
+  job_keywords: ["Cloud Architect", "DevOps Engineer", "Senior Solutions Architect"]
+  job_locations: ["nl", "gb", "de"]
+  job_tags: ["remote", "relocation"]
+  jobs_count: 5
+
+  # 2. Elasticsearch innovations
+  elastic_tags: ["elasticsearch", "opensearch", "elastic stack", "kibana"]
+
+  # 3. Cloud innovations (AWS, Azure, GCP)
+  cloud_tags: ["AWS", "Azure", "GCP", "cloud computing"]
+
+  # 4. Claude Code daily trick
+  claude_code: true
+
+  # 5. ETFs and market
+  etfs: ["VWCE.DE"]
+  etf_names: {"VWCE.DE": "VANG FTSE AW USDA"}
+
+  # 6. Bitcoin
+  crypto: ["BTC-USD"]
+
+  # 7. Dutch news — top 3
+  dutch_news_count: 3
+
+  # 8. Best weather in Europe
+  weather_cities: ["Barcelona", "Lisbon", "Athens", "Rome", "Nice", "Dubrovnik", "Malaga", "Split", "Valencia", "Palermo", "Heraklion", "Faro"]
+
+  # 9. Positive news
+  positive_news: true
 
 limits:
-  max_items: 10
-  weights:
-    news: 3
-    stocks: 2
-    jobs: 2
-    tech: 2
-    knowledge: 1
+  max_items: 25
