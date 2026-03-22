@@ -30,6 +30,12 @@ Resources:
             Schedule: cron(0 12 * * ? *)
             Description: "Run daily at 7 AM ET (12:00 UTC)"
             Enabled: true
+        MorningScheduleCEST:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 6 * * ? *)
+            Description: "Run daily at 8 AM CEST (06:00 UTC)"
+            Enabled: true
 
 Parameters:
   GNewsApiKey:
