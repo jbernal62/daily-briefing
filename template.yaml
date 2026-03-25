@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   daily-briefing
-  Jeff's daily AI-powered news briefing via Telegram.
+  Jeff's daily AI-powered news briefing via Telegram + SNS (email & SMS).
   Scheduled at 09:30 CEST (07:30 UTC) via EventBridge.
 
 Globals:
@@ -13,8 +13,16 @@ Globals:
     Environment:
       Variables:
         AWS_REGION_NAME: !Ref AWS::Region
+        SNS_TOPIC_ARN: !Ref BriefingTopic
 
 Resources:
+
+  # SNS Topic — subscribe email addresses and/or Netherlands phone numbers (+31...)
+  BriefingTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: daily-briefing
+      DisplayName: "Daily Briefing"
 
   DailyBriefingFunction:
     Type: AWS::Serverless::Function
@@ -22,7 +30,7 @@ Resources:
       FunctionName: daily-briefing
       CodeUri: src/
       Handler: handler.lambda_handler
-      Description: "Daily AI news briefing: Tavily search + Claude synthesis → Telegram"
+      Description: "Daily AI news briefing: Tavily search + Claude synthesis → Telegram + SNS"
       Policies:
         - Statement:
             - Effect: Allow
@@ -31,6 +39,10 @@ Resources:
               Resource:
                 - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:invoice-tracker/anthropic-api-key*"
                 - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:daily-briefing*"
+            - Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref BriefingTopic
       Events:
         DailyScheduleCEST:
           Type: Schedule
@@ -50,6 +62,9 @@ Outputs:
   FunctionArn:
     Description: Lambda function ARN
     Value: !GetAtt DailyBriefingFunction.Arn
+  BriefingTopicArn:
+    Description: SNS topic ARN — subscribe email or SMS endpoints here
+    Value: !Ref BriefingTopic
   ScheduleRule:
     Description: EventBridge schedule rule name
     Value: daily-briefing-schedule

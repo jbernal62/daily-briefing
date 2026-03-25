@@ -18,11 +18,13 @@ from searcher import TavilySearcher
 from synthesizer import ClaudeSynthesizer
 from telegram_sender import TelegramBot
 from topics import TOPICS
+import sns_publisher
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 REGION = os.environ.get("AWS_REGION_NAME", "us-east-1")
+SNS_TOPIC_ARN = os.environ.get("SNS_TOPIC_ARN", "")
 
 
 def _get_secret(client, secret_id: str) -> str:
@@ -89,17 +91,25 @@ def lambda_handler(event, context):
             topic_id, message, error = future.result()
             results[topic_id] = (message, error)
 
+    # Collect ordered messages (for SNS publish)
+    ordered_messages = []
+
     # Send in defined topic order with a short delay between messages
     for topic in TOPICS:
         message, error = results.get(topic["id"], (None, "Not processed"))
         if message:
             bot.send(message)
+            ordered_messages.append(message)
         else:
             bot.send(
                 f"<b>⚠️ {topic['emoji']} {topic['title']}</b>\n"
                 f"Could not load section today. ({error or 'unknown error'})"
             )
         time.sleep(1)
+
+    # Publish to SNS (email + SMS subscribers)
+    if SNS_TOPIC_ARN and ordered_messages:
+        sns_publisher.publish(SNS_TOPIC_ARN, ordered_messages, today, REGION)
 
     elapsed = round(time.time() - start, 1)
     logger.info(f"Daily briefing complete in {elapsed}s")
