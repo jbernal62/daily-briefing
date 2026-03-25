@@ -23,6 +23,11 @@ Resources:
     Properties:
       TopicName: daily-briefing
       DisplayName: "Daily Briefing"
+      Tags:
+        - Key: Project
+          Value: daily-briefing
+        - Key: ManagedBy
+          Value: aws-sam
 
   DailyBriefingFunction:
     Type: AWS::Serverless::Function
@@ -31,6 +36,9 @@ Resources:
       CodeUri: src/
       Handler: handler.lambda_handler
       Description: "Daily AI news briefing: Tavily search + Claude synthesis → Telegram + SNS"
+      Tags:
+        Project: daily-briefing
+        ManagedBy: aws-sam
       Policies:
         - Statement:
             - Effect: Allow
