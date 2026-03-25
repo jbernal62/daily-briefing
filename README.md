@@ -78,7 +78,7 @@ make deploy          # Redeploy after code changes
 
 This repo includes two GitHub Actions workflows:
 
-- `ci` — installs Python dependencies, compiles `src/`, and validates `template.yaml` on pushes and pull requests
+- `ci` — installs dependencies, compiles `src/`, runs `sam validate --lint`, and executes `sam build` to catch infrastructure and packaging changes on pushes and pull requests
 - `opencode` — lets you mention `/oc` or `/opencode` in issue comments or PR review comments to trigger OpenCode inside GitHub Actions
 
 ### Required GitHub secret
