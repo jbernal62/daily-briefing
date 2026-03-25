@@ -74,6 +74,25 @@ make schedule-on     # Resume the daily schedule
 make deploy          # Redeploy after code changes
 ```
 
+## GitHub Actions
+
+This repo includes two GitHub Actions workflows:
+
+- `ci` — installs Python dependencies, compiles `src/`, and validates `template.yaml` on pushes and pull requests
+- `opencode` — lets you mention `/oc` or `/opencode` in issue comments or PR review comments to trigger OpenCode inside GitHub Actions
+
+### Required GitHub secret
+
+Add this repository secret before using the OpenCode workflow:
+
+- `ANTHROPIC_API_KEY`
+
+### Example OpenCode comments
+
+- `/oc explain this workflow`
+- `/oc review this PR for bugs`
+- `/opencode summarize the risks in this change`
+
 ## Schedule
 
 The EventBridge cron runs at **07:30 UTC**:

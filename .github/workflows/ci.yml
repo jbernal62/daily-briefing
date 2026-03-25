@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+      - feat/**
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+          pip install -r src/requirements.txt
+
+      - name: Compile Python sources
+        run: python -m compileall src
+
+      - name: Validate SAM template
+        run: |
+          python - <<'PY'
+          import pathlib
+          import yaml
+
+          path = pathlib.Path('template.yaml')
+          text = path.read_text()
+          for tag in ('!Ref', '!Sub', '!GetAtt'):
+              text = text.replace(tag, 'TAG')
+          yaml.safe_load(text)
+          print('template.yaml parsed successfully')
+          PY
