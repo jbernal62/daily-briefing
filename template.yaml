@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  daily-briefing
+  Jeff's daily AI-powered news briefing via Telegram.
+  Scheduled at 09:30 CEST (07:30 UTC) via EventBridge.
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 600        # 10 minutes — enough for all topics in parallel
+    MemorySize: 1024
+    Environment:
+      Variables:
+        AWS_REGION_NAME: !Ref AWS::Region
+
+Resources:
+
+  DailyBriefingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: daily-briefing
+      CodeUri: src/
+      Handler: handler.lambda_handler
+      Description: "Daily AI news briefing: Tavily search + Claude synthesis → Telegram"
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource:
+                - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:invoice-tracker/anthropic-api-key*"
+                - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:daily-briefing*"
+      Events:
+        DailyScheduleCEST:
+          Type: Schedule
+          Properties:
+            # 07:30 UTC = 09:30 CEST (UTC+2, Apr–Oct) / 08:30 CET (UTC+1, Nov–Mar)
+            Schedule: cron(30 7 * * ? *)
+            Name: daily-briefing-schedule
+            Description: "Daily briefing at 09:30 CEST"
+            Enabled: true
+    Metadata:
+      BuildMethod: python3.12
+
+Outputs:
+  FunctionName:
+    Description: Lambda function name
+    Value: !Ref DailyBriefingFunction
+  FunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt DailyBriefingFunction.Arn
+  ScheduleRule:
+    Description: EventBridge schedule rule name
+    Value: daily-briefing-schedule
