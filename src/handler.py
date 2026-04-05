@@ -1,4 +1,4 @@
-"""Lambda handler — orchestrates the daily briefing pipeline."""
+"""Lambda handler — orchestrates the daily briefing pipeline (Gemini-powered)."""
 
 import asyncio
 import os
@@ -82,10 +82,10 @@ async def run_pipeline(config: dict) -> dict:
     all_items = await fetch_all_sources(config)
     print(f"Fetched {len(all_items)} items from all sources")
 
-    # 2. Rank and summarize with Claude
-    claude_key = os.environ["ANTHROPIC_API_KEY"]
-    ranked = rank_and_summarize(all_items, config, claude_key)
-    print(f"Claude selected top {len(ranked)} items")
+    # 2. Rank and summarize with Gemini
+    gemini_key = os.environ["GEMINI_API_KEY"]
+    ranked = rank_and_summarize(all_items, config, gemini_key)
+    print(f"Gemini selected top {len(ranked)} items")
 
     # 3. Format the message
     name = config["profile"]["name"]

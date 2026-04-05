@@ -1,11 +1,11 @@
-"""Claude AI ranker — curates and summarizes the daily briefing."""
+"""Gemini AI ranker — curates and summarizes the daily briefing."""
 
 import json
-import anthropic
+import google.generativeai as genai
 
 
 def rank_and_summarize(items: list[dict], config: dict, api_key: str) -> list[dict]:
-    """Send all fetched items to Claude and get back a curated, structured briefing."""
+    """Send all fetched items to Gemini and get back a curated, structured briefing."""
     max_items = config.get("limits", {}).get("max_items", 25)
     name = config.get("profile", {}).get("name", "User")
     interests = config.get("interests", {})
@@ -57,14 +57,14 @@ Return ONLY a JSON array of objects, each with these fields:
 
 Return valid JSON only, no markdown fences."""
 
-    client = anthropic.Anthropic(api_key=api_key)
-    message = client.messages.create(
-        model="claude-sonnet-4-5-20250929",
-        max_tokens=4000,
-        messages=[{"role": "user", "content": prompt}],
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-2.0-flash")
+    response = model.generate_content(
+        prompt,
+        generation_config=genai.GenerationConfig(max_output_tokens=4000),
     )
 
-    response_text = message.content[0].text.strip()
+    response_text = response.text.strip()
     if response_text.startswith("```"):
         response_text = response_text.split("\n", 1)[1]
         response_text = response_text.rsplit("```", 1)[0]

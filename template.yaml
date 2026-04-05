@@ -20,7 +20,7 @@ Resources:
           GNEWS_API_KEY: !Ref GNewsApiKey
           ADZUNA_APP_ID: !Ref AdzunaAppId
           ADZUNA_API_KEY: !Ref AdzunaApiKey
-          ANTHROPIC_API_KEY: !Ref AnthropicApiKey
+          GEMINI_API_KEY: !Ref GeminiApiKey
           TELEGRAM_BOT_TOKEN: !Ref TelegramBotToken
           TELEGRAM_CHAT_ID: !Ref TelegramChatId
       Events:
@@ -47,7 +47,7 @@ Parameters:
   AdzunaApiKey:
     Type: String
     NoEcho: true
-  AnthropicApiKey:
+  GeminiApiKey:
     Type: String
     NoEcho: true
   TelegramBotToken:
